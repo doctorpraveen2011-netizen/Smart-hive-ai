@@ -24,6 +24,8 @@ dist/
 build/
 */build/
 out/
+.vite/
+*/.vite/
 
 # Environment Variables & Secrets (Keep .env.example)
 .env
