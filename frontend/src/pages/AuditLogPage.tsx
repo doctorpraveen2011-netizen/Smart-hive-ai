@@ -29,7 +29,71 @@ interface AuditRecord {
 }
 
 export const AuditLogPage: React.FC = () => {
-  const [logs, setLogs] = useState<AuditRecord[]>([]);
+  const [logs, setLogs] = useState<AuditRecord[]>([
+    {
+      id: 'log-seed-1',
+      actor: 'Autonomous Safety Governor',
+      action: 'POLICY_EVALUATION',
+      target: 'AUTH-DECOY-07',
+      details: 'Evaluated action ACTIVATE_AUTH_DECOY_07 against policy POL-DEC-01. Result: ALLOW.',
+      ipAddress: '10.0.4.15',
+      timestamp: new Date(Date.now() - 3600000).toISOString(),
+    },
+    {
+      id: 'log-seed-2',
+      actor: 'SmartHive AI Engine',
+      action: 'DECOY_ENGAGED',
+      target: 'SSH-DECOY-01',
+      details: 'Adversary 198.51.100.42 attempted brute-force on fake SSH daemon. Evidence captured.',
+      ipAddress: '198.51.100.42',
+      timestamp: new Date(Date.now() - 3000000).toISOString(),
+    },
+    {
+      id: 'log-seed-3',
+      actor: 'Adaptive Deception Fabric',
+      action: 'HONEYTOKEN_ACCESSED',
+      target: 'admin_backup_password.txt',
+      details: 'Unauthorized SMB read on canary document. Severity escalated to CRITICAL.',
+      ipAddress: '198.51.100.42',
+      timestamp: new Date(Date.now() - 2400000).toISOString(),
+    },
+    {
+      id: 'log-seed-4',
+      actor: 'Autonomy Governor',
+      action: 'SESSION_DIVERTED',
+      target: 'Session SH-104',
+      details: 'TCP connection intercepted at gateway and diverted to shadow honeynet container.',
+      ipAddress: '10.0.1.1',
+      timestamp: new Date(Date.now() - 1800000).toISOString(),
+    },
+    {
+      id: 'log-seed-5',
+      actor: 'Forensic Evidence Engine',
+      action: 'EVIDENCE_SEALED',
+      target: 'sys_exfiltration.txt',
+      details: 'Cryptographic SHA-256 seal generated: a8b9c0d1e2f3456789abcdef0123456789abcdef...',
+      ipAddress: '127.0.0.1',
+      timestamp: new Date(Date.now() - 1200000).toISOString(),
+    },
+    {
+      id: 'log-seed-6',
+      actor: 'SOC Incident Lead',
+      action: 'PATROL_DISPATCHED',
+      target: 'Patrol Team 1 (Alpha Unit)',
+      details: 'Mobilized unit to Mumbai BKC Datacenter for server room physical perimeter security.',
+      ipAddress: '10.0.0.2',
+      timestamp: new Date(Date.now() - 600000).toISOString(),
+    },
+    {
+      id: 'log-seed-7',
+      actor: 'Safety Governor Queue',
+      action: 'APPROVAL_REQUIRED',
+      target: 'AUTH-SRV-01',
+      details: 'Proposed production host isolation flagged for manual confirmation.',
+      ipAddress: '127.0.0.1',
+      timestamp: new Date().toISOString(),
+    },
+  ]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<'ALL' | 'POLICY' | 'DECEPTION' | 'CONTAINMENT' | 'OPERATIONS'>('ALL');
   const [isVerifying, setIsVerifying] = useState(false);

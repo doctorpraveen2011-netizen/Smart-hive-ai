@@ -32,7 +32,85 @@ interface DecisionRecord {
 }
 
 export const GovernorPage: React.FC = () => {
-  const [decisions, setDecisions] = useState<DecisionRecord[]>([]);
+  const [decisions, setDecisions] = useState<DecisionRecord[]>([
+    {
+      id: 'gov-seed-1',
+      actionType: 'ACTIVATE_AUTH_DECOY_07',
+      category: 'SAFE_DECEPTION',
+      riskTier: 'LOW',
+      decision: 'ALLOW',
+      policyRule: 'Safe Deception Policy: Decoy activation is harmless to production and auto-approved.',
+      reason: 'Zero risk to corporate assets; intercepts adversary traffic safely.',
+      approvedBy: 'AUTONOMOUS_POLICY_ENGINE',
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+    },
+    {
+      id: 'gov-seed-2',
+      actionType: 'DEPLOY_HONEYTOKEN_ADMIN_PASSWORD',
+      category: 'SYNTHETIC_LURE',
+      riskTier: 'LOW',
+      decision: 'ALLOW',
+      policyRule: 'Honeytoken Policy: Deployment of synthetic passive lures is auto-approved.',
+      reason: 'Synthetic files have no executable payload; enables early warning.',
+      approvedBy: 'AUTONOMOUS_POLICY_ENGINE',
+      createdAt: new Date(Date.now() - 3000000).toISOString(),
+    },
+    {
+      id: 'gov-seed-3',
+      actionType: 'REDIRECT_SHADOW_NETWORK',
+      category: 'SESSION_ROUTING',
+      riskTier: 'MEDIUM',
+      decision: 'ALLOW',
+      policyRule: 'Shadow Network Policy: Diverting simulated session to decoy network is auto-approved.',
+      reason: 'Preserves production server integrity while preserving threat intelligence collection.',
+      approvedBy: 'AUTONOMOUS_POLICY_ENGINE',
+      createdAt: new Date(Date.now() - 2400000).toISOString(),
+    },
+    {
+      id: 'gov-seed-4',
+      actionType: 'DISPATCH_PATROL_TEAM_1',
+      category: 'PHYSICAL_RESPONSE',
+      riskTier: 'MEDIUM',
+      decision: 'ALLOW',
+      policyRule: 'Authorized Patrol Response: Physical on-site perimeter verification allowed.',
+      reason: 'Physical site perimeter security deployed without network impact.',
+      approvedBy: 'AUTONOMOUS_POLICY_ENGINE',
+      createdAt: new Date(Date.now() - 1800000).toISOString(),
+    },
+    {
+      id: 'gov-seed-5',
+      actionType: 'PRODUCTION_ENDPOINT_ISOLATION',
+      category: 'PRODUCTION_INTERVENTION',
+      riskTier: 'MEDIUM',
+      decision: 'HUMAN_APPROVAL',
+      policyRule: 'Production Boundary Policy: Disconnecting real production host requires human authority.',
+      reason: 'Could impact live corporate operations; awaiting SOC Incident Lead confirmation.',
+      approvedBy: 'PENDING_SOC_ANALYST',
+      createdAt: new Date(Date.now() - 1200000).toISOString(),
+    },
+    {
+      id: 'gov-seed-6',
+      actionType: 'BLOCK_CORE_FIREWALL_SUBNET',
+      category: 'PRODUCTION_INTERVENTION',
+      riskTier: 'CRITICAL',
+      decision: 'HUMAN_APPROVAL',
+      policyRule: 'Network Infrastructure Policy: Permanent corporate firewall changes require Change Control.',
+      reason: 'Risk of enterprise connectivity interruption; awaiting SOC Lead signoff.',
+      approvedBy: 'PENDING_SOC_ANALYST',
+      createdAt: new Date(Date.now() - 600000).toISOString(),
+    },
+    {
+      id: 'gov-seed-7',
+      actionType: 'DESTRUCTIVE_COUNTER_EXPLOIT',
+      category: 'DEFENSIVE_AUTONOMY',
+      riskTier: 'CRITICAL',
+      decision: 'BLOCK',
+      policyRule: 'Absolute Defensive Invariant: Destructive or unauthorized actions are strictly prohibited.',
+      reason: 'Violates defensive cybersecurity boundary rules.',
+      approvedBy: 'SYSTEM_HARD_GOVERNOR',
+      createdAt: new Date().toISOString(),
+    },
+  ]);
   const [currentLevel, setCurrentLevel] = useState<string>('LEVEL_2');
   const [isEvaluating, setIsEvaluating] = useState<boolean>(false);
   const [testAction, setTestAction] = useState<string>('PRODUCTION_FIREWALL_MODIFICATION');

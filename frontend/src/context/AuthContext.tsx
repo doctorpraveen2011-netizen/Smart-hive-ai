@@ -46,10 +46,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setUser(res.data.user);
             localStorage.setItem('smarthive_user', JSON.stringify(res.data.user));
           }
-        } catch (err) {
-          console.warn('Session expired or invalid, logging out:', err);
-          // Only clear if 401
-          logout();
+        } catch (err: any) {
+          // If explicit 401 Unauthorized from real API, clear session
+          if (err.response && err.response.status === 401) {
+            console.warn('Session expired (401), logging out');
+            logout();
+          } else {
+            // Network error on static hosting (e.g. GitHub Pages) - retain offline demo session
+            console.info('Backend unreachable, preserving local security session');
+          }
         }
       }
       setIsLoading(false);
@@ -75,6 +80,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
       return { success: false, error: 'Login failed: Invalid server response' };
     } catch (err: any) {
+      // Offline / Static Hosting (GitHub Pages) Smart Fallback
+      if (!err.response || err.message === 'Network Error' || err.code === 'ERR_NETWORK') {
+        const lowerEmail = email.toLowerCase();
+        let demoName = 'Ananya Iyer';
+        let demoRole = 'SOC_ANALYST';
+
+        if (lowerEmail.includes('admin') || lowerEmail.includes('malhotra')) {
+          demoName = 'Vikram Malhotra';
+          demoRole = 'ADMIN';
+        } else if (lowerEmail.includes('responder') || lowerEmail.includes('sundaram')) {
+          demoName = 'Capt. R. Sundaram';
+          demoRole = 'RESPONDER';
+        } else if (email.includes('@')) {
+          const prefix = email.split('@')[0];
+          demoName = prefix.charAt(0).toUpperCase() + prefix.slice(1) + ' (Analyst)';
+        }
+
+        const fallbackUser: User = {
+          id: 'usr-' + Math.random().toString(36).substring(2, 9),
+          email: email || 'analyst@smartcorp.demo',
+          name: demoName,
+          role: demoRole,
+        };
+        const fallbackToken = 'demo-jwt-token-' + Date.now();
+
+        localStorage.setItem('smarthive_token', fallbackToken);
+        localStorage.setItem('smarthive_user', JSON.stringify(fallbackUser));
+
+        setToken(fallbackToken);
+        setUser(fallbackUser);
+
+        return { success: true };
+      }
+
       const msg = err.response?.data?.error || err.message || 'Authentication failed';
       return { success: false, error: msg };
     }
@@ -97,6 +136,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
       return { success: false, error: 'Registration failed: Invalid response' };
     } catch (err: any) {
+      // Offline / Static Hosting Fallback
+      if (!err.response || err.message === 'Network Error' || err.code === 'ERR_NETWORK') {
+        const fallbackUser: User = {
+          id: 'usr-' + Math.random().toString(36).substring(2, 9),
+          email,
+          name: name || 'Registered Analyst',
+          role: role || 'SOC_ANALYST',
+        };
+        const fallbackToken = 'demo-jwt-token-' + Date.now();
+
+        localStorage.setItem('smarthive_token', fallbackToken);
+        localStorage.setItem('smarthive_user', JSON.stringify(fallbackUser));
+
+        setToken(fallbackToken);
+        setUser(fallbackUser);
+
+        return { success: true };
+      }
+
       const msg = err.response?.data?.error || err.message || 'Registration failed';
       return { success: false, error: msg };
     }
