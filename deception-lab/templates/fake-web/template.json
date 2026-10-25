@@ -1,0 +1,11 @@
+{
+  "templateId": "fake-web-v1",
+  "name": "SmartCorp Employee Portal Honeypot",
+  "decoyHostname": "WEB-DECOY-02",
+  "ports": [80, 443, 8080],
+  "syntheticPages": ["/login", "/dashboard", "/api/v1/internal-users"],
+  "honeytokens": [
+    { "file": "cloud_credentials.txt", "token": "HT-WEB-3390", "type": "CLOUD_KEY" }
+  ],
+  "governorRule": "ALLOW_AUTONOMOUS_DEPLOYMENT"
+}

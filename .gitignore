@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+*/node_modules/
+.pnp
+.pnp.js
+
+# Python Virtual Environments & Bytecode
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+ai-engine/venv/
+ai-engine/.venv/
+
+# Build outputs
+dist/
+*/dist/
+build/
+*/build/
+out/
+
+# Environment Variables & Secrets (Keep .env.example)
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+!**/.env.example
+
+# SQLite & Local Databases
+backend/dev.db
+backend/dev.db-journal
+backend/prisma/dev.db
+backend/prisma/*.db
+backend/*.db
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Logs & temp files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.tempmediaStorage/
+
+# Editor / System
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

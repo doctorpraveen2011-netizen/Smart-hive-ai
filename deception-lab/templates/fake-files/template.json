@@ -1,0 +1,15 @@
+{
+  "templateId": "fake-files-v1",
+  "name": "SmartCorp Confidential Document Share Decoy",
+  "decoyHostname": "FILE-DECOY-05",
+  "ports": [445, 139],
+  "syntheticShares": ["FinanceConfidential", "EngineeringBlueprints"],
+  "documents": [
+    { "filename": "finance_q4.xlsx", "size": "420KB", "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
+    { "filename": "employee_salary_2026.xlsx", "size": "1.2MB", "hash": "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589" }
+  ],
+  "honeytokens": [
+    { "file": "finance_q4.xlsx", "token": "HT-FILE-8891", "type": "CONFIDENTIAL_DOC" }
+  ],
+  "governorRule": "ALLOW_AUTONOMOUS_DEPLOYMENT"
+}

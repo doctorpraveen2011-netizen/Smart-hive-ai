@@ -1,0 +1,16 @@
+{
+  "templateId": "fake-auth-v1",
+  "name": "SmartCorp Kerberos / Active Directory Decoy Controller",
+  "decoyHostname": "AUTH-DECOY-07",
+  "ports": [88, 389, 636],
+  "syntheticDomain": "smartcorp.demo",
+  "syntheticUsers": [
+    { "user": "arun.kumar", "role": "Finance Controller", "lastLogin": "2026-10-25T08:30:00Z" },
+    { "user": "priya.sharma", "role": "DevOps Engineer", "lastLogin": "2026-10-25T09:12:00Z" },
+    { "user": "admin.backup", "role": "Domain Admin Decoy", "lastLogin": "2026-10-24T18:00:00Z" }
+  ],
+  "honeytokens": [
+    { "file": "admin_backup_password.txt", "token": "HT-AUTH-9912", "type": "CREDENTIAL_FILE" }
+  ],
+  "governorRule": "ALLOW_AUTONOMOUS_DEPLOYMENT"
+}

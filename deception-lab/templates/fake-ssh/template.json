@@ -1,0 +1,15 @@
+{
+  "templateId": "fake-ssh-v1",
+  "name": "SmartCorp Bastion Gateway Honeypot (Cowrie-Style)",
+  "decoyHostname": "SSH-DECOY-01",
+  "ports": [22, 2222],
+  "syntheticBanner": "OpenSSH_8.9p1 Ubuntu-3ubuntu0.6",
+  "allowedSimulatedLogins": [
+    { "user": "root", "password": "password123", "action": "TRAP_SESSION" },
+    { "user": "deploy", "password": "deploy2026", "action": "TRAP_SESSION" }
+  ],
+  "honeytokens": [
+    { "file": "vpn_credentials.txt", "token": "HT-SSH-7721", "type": "CREDENTIAL_FILE" }
+  ],
+  "governorRule": "ALLOW_AUTONOMOUS_DEPLOYMENT"
+}

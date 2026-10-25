@@ -1,0 +1,15 @@
+{
+  "templateId": "fake-db-v1",
+  "name": "SmartCorp Financial Transactions Decoy DB",
+  "decoyHostname": "DB-DECOY-03",
+  "ports": [5432, 1433],
+  "syntheticSchema": "public_transactions",
+  "syntheticTables": [
+    { "table": "customer_payment_vault", "rowCount": 1420 },
+    { "table": "executive_salary_ledger", "rowCount": 45 }
+  ],
+  "honeytokens": [
+    { "file": "customer_backup.sql", "token": "HT-DB-4011", "type": "DATABASE_DUMP" }
+  ],
+  "governorRule": "ALLOW_AUTONOMOUS_DEPLOYMENT"
+}

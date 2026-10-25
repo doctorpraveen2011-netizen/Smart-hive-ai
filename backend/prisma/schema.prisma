@@ -1,0 +1,488 @@
+// Prisma Schema for SmartHive AI
+// Autonomous Predictive Cyber-Deception, Threat Futures, Evidence Intelligence, and Security Response Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// -------------------------------------------------------------
+// USER & ACCESS CONTROL
+// -------------------------------------------------------------
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("SOC_ANALYST") // ADMIN, SOC_ANALYST, RESPONDER, VIEWER
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// -------------------------------------------------------------
+// SMARTCORP ENTERPRISE TOPOLOGY
+// -------------------------------------------------------------
+model Site {
+  id             String          @id @default(uuid())
+  code           String          @unique // CHN-01, BLR-01, MUM-01, DEL-01, HYD-01
+  name           String          // Chennai HQ, Bengaluru R&D, etc.
+  city           String
+  latitude       Float
+  longitude      Float
+  address        String
+  riskLevel      String          @default("LOW") // LOW, GUARDED, MEDIUM, HIGH, CRITICAL
+  assets         Asset[]
+  decoys         Decoy[]
+  events         SecurityEvent[]
+  incidents      Incident[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Asset {
+  id              String              @id @default(uuid())
+  hostname        String              @unique // WEB-SRV-01, AUTH-SRV-01, DB-PROD-01, etc.
+  type            String              // WEB_SERVER, AUTH_CONTROLLER, DATABASE, FILE_SERVER, MAIL_SERVER, CI_CD, GATEWAY, PORTAL
+  internalAddress String              // 10.10.x.x
+  siteId          String
+  site            Site                @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  status          String              @default("ACTIVE") // ACTIVE, INVESTIGATING, PROTECTED, DIVERTED, ISOLATED
+  sensitivity     String              @default("HIGH") // LOW, MEDIUM, HIGH, CRITICAL
+  risk            Int                 @default(0) // 0-100
+  lastActivity    DateTime            @default(now())
+  deceptionStatus String              @default("NORMAL") // NORMAL, SHADOW_ACTIVE, LURED, CONTAINED
+  sourceRelations AssetRelationship[] @relation("SourceAsset")
+  targetRelations AssetRelationship[] @relation("TargetAsset")
+  events          SecurityEvent[]
+  honeytokens     Honeytoken[]
+  incidents       Incident[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+}
+
+model AssetRelationship {
+  id               String   @id @default(uuid())
+  sourceAssetId    String
+  sourceAsset      Asset    @relation("SourceAsset", fields: [sourceAssetId], references: [id], onDelete: Cascade)
+  targetAssetId    String
+  targetAsset      Asset    @relation("TargetAsset", fields: [targetAssetId], references: [id], onDelete: Cascade)
+  relationshipType String   // AUTHENTICATES_WITH, REPLICATES_TO, ACCESSES_DATA, ROUTES_TRAFFIC, CI_CD_PIPELINE
+  protocol         String   // HTTPS, SSH, SMB, KERBEROS, POSTGRES, LDAP
+  port             Int
+  createdAt        DateTime @default(now())
+}
+
+// -------------------------------------------------------------
+// SYNTHETIC REALITY GRAPH (Consistent Fictional World)
+// -------------------------------------------------------------
+model SyntheticDepartment {
+  id          String              @id @default(uuid())
+  code        String              @unique // FIN, ENG, HR, SEC, OPS
+  name        String              // Finance, Engineering, etc.
+  description String
+  identities  SyntheticIdentity[]
+  documents   SyntheticDocument[]
+  createdAt   DateTime            @default(now())
+}
+
+model SyntheticIdentity {
+  id             String               @id @default(uuid())
+  fullName       String               // Arun Kumar, Priya Sharma, etc.
+  email          String               @unique // arun.kumar@smartcorp.demo
+  role           String               // Lead Financial Controller
+  departmentId   String
+  department     SyntheticDepartment  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  devices        SyntheticDevice[]
+  credentials    SyntheticCredential[]
+  createdAt      DateTime             @default(now())
+}
+
+model SyntheticDevice {
+  id           String            @id @default(uuid())
+  hostname     String            @unique // FIN-LT-014
+  deviceType   String            // LAPTOP, WORKSTATION, MOBILE
+  assignedToId String
+  assignedTo   SyntheticIdentity @relation(fields: [assignedToId], references: [id], onDelete: Cascade)
+  ipAddress    String            // 10.10.40.14
+  macAddress   String
+  os           String            // Windows 11 Enterprise
+  createdAt    DateTime          @default(now())
+}
+
+model SyntheticCredential {
+  id           String            @id @default(uuid())
+  username     String            // arun.kumar
+  passwordHash String            // synthetic bcrypt hash
+  plainHint    String            // SmartCorpFinance$2026!
+  service      String            // VPN, DOMAIN_AUTH, SWIFT, AWS_CONSOLE
+  identityId   String
+  identity     SyntheticIdentity @relation(fields: [identityId], references: [id], onDelete: Cascade)
+  createdAt    DateTime          @default(now())
+}
+
+model SyntheticDocument {
+  id               String              @id @default(uuid())
+  filename         String              // finance_q4.xlsx, employee_salary_2026.xlsx
+  fileType         String              // SPREADSHEET, SQL_DUMP, TXT, PDF
+  departmentId     String
+  department       SyntheticDepartment @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  sensitivityLevel String              // RESTRICTED, CONFIDENTIAL, INTERNAL
+  contentHash      String              // Synthetic SHA-256
+  summary          String
+  createdAt        DateTime            @default(now())
+}
+
+model SyntheticRelationship {
+  id           String   @id @default(uuid())
+  entityTypeA  String   // IDENTITY, DEVICE, DOCUMENT, CREDENTIAL
+  entityIdA    String
+  entityTypeB  String
+  entityIdB    String
+  relationType String   // OWNS, HAS_ACCESS_TO, AUTHENTICATES_ON, GENERATED
+  createdAt    DateTime @default(now())
+}
+
+// -------------------------------------------------------------
+// TELEMETRY & THREAT SESSIONS
+// -------------------------------------------------------------
+model ThreatSession {
+  id                 String                     @id @default(uuid())
+  sessionCode        String                     @unique // SH-104
+  sourceAddress      String                     // 198.51.100.42 (approximate external IP)
+  targetAsset        String?                    // Primary target asset hostname
+  siteCode           String?                    // Originating / targeted site
+  currentStage       String                     @default("NORMAL") // RECONNAISSANCE, DISCOVERY, CREDENTIAL_DISCOVERY, etc.
+  stageState         String                     @default("OBSERVED") // OBSERVED, SUSPECTED, PREDICTED, SIMULATED
+  observedAttackType String                     @default("NORMAL_TRAFFIC")
+  suspectedIntent    String                     @default("BENIGN")
+  riskScore          Int                        @default(0) // 0-100
+  riskCategory       String                     @default("LOW") // LOW, GUARDED, MEDIUM, HIGH, CRITICAL
+  status             String                     @default("ACTIVE") // ACTIVE, DIVERTED, ISOLATED, CONTAINED, TERMINATED
+  shadowDiverted     Boolean                    @default(false)
+  divertedToDecoy    String?                    // AUTH-DECOY-07
+  events             SecurityEvent[]
+  behaviorProfile    BehaviorProfile?
+  curiosityProfile   CuriosityProfile?
+  predictions        AttackPrediction[]
+  threatFutures      ThreatFuture[]
+  counterfactuals    CounterfactualSimulation[]
+  riskHistories      RiskHistory[]
+  autonomousActions  AutonomousAction[]
+  governorDecisions  GovernorDecision[]
+  incidents          Incident[]
+  evidence           Evidence[]
+  evaluations        PredictionEvaluation[]
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+}
+
+model SecurityEvent {
+  id            String         @id @default(uuid())
+  timestamp     DateTime       @default(now())
+  sessionId     String?
+  session       ThreatSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  source        String         // NETWORK_IDS, HONEYPOT, HOST_AGENT, AUTH_LOG, API_GW
+  sourceAddress String         // 198.51.100.42
+  assetId       String?
+  asset         Asset?         @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  eventType     String         // RECONNAISSANCE, SERVICE_ENUMERATION, DECOY_INTERACTION, HONEYTOKEN_ACCESS, etc.
+  severity      String         // INFO, LOW, MEDIUM, HIGH, CRITICAL
+  description   String
+  siteId        String?
+  site          Site?          @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  metadata      String         // JSON string with port, protocol, payload hashes
+  sha256Hash    String         // Evidence Integrity Hash
+  createdAt     DateTime       @default(now())
+}
+
+model BehaviorProfile {
+  id             String        @id @default(uuid())
+  sessionId      String        @unique
+  session        ThreatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  eventVelocity  Float         @default(0.0) // events per minute
+  anomalyScore   Float         @default(0.0) // 0.0 - 1.0 from ML isolation forest
+  dwellTimeSecs  Int           @default(0)
+  failedAuthRate Float         @default(0.0)
+  portsScanned   Int           @default(0)
+  lastUpdated    DateTime      @default(now())
+}
+
+model CuriosityProfile {
+  id                      String        @id @default(uuid())
+  sessionId               String        @unique
+  session                 ThreatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  credentialsScore        Int           @default(0) // 0-100%
+  databaseScore           Int           @default(0) // 0-100%
+  cloudSecretsScore       Int           @default(0) // 0-100%
+  sourceCodeScore         Int           @default(0) // 0-100%
+  financialScore          Int           @default(0) // 0-100%
+  authInfraScore          Int           @default(0) // 0-100%
+  primaryInterest         String        @default("UNKNOWN")
+  evidenceReason          String        @default("Awaiting multi-signal correlation")
+  lastUpdated             DateTime      @default(now())
+}
+
+// -------------------------------------------------------------
+// PREDICTIVE INTELLIGENCE & THREAT FUTURES
+// -------------------------------------------------------------
+model AttackPrediction {
+  id                 String                 @id @default(uuid())
+  sessionId          String
+  session            ThreatSession          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  currentStage       String
+  observedAttackType String
+  suspectedIntent    String
+  predictedNextStage String
+  predictedAttackType String
+  predictedTarget    String                 // Hostname e.g. AUTH-SRV-01
+  confidence         Int                    // 0-100%
+  riskScore          Int                    // 0-100
+  explanation        String                 // Explainable AI text
+  evaluations        PredictionEvaluation[]
+  createdAt          DateTime               @default(now())
+}
+
+model ThreatFuture {
+  id                 String         @id @default(uuid())
+  sessionId          String
+  session            ThreatSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  branchName         String         // Credential Access, Privilege Escalation, Session Stops
+  probability        Int            // 0-100%
+  stage              String         // Attack stage enum
+  predictedTarget    String         // Target asset hostname
+  risk               Int            // 0-100
+  supportingEvidence String         // Specific evidence citations from DB
+  parentBranchId     String?        // For multi-level tree hierarchy
+  branchDepth        Int            @default(1)
+  createdAt          DateTime       @default(now())
+}
+
+model CounterfactualSimulation {
+  id                      String        @id @default(uuid())
+  sessionId               String
+  session                 ThreatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  currentRisk             Int
+  proposedAction          String        // NO_ACTION, AUTH_DECOY, SHADOW_NETWORK, ISOLATION
+  progressionRisk         Int           // Simulated risk if this action is taken
+  estimatedRiskReduction  Int           // % reduction
+  recommendedAction       Boolean       @default(false)
+  rationale               String
+  simulatedDefenseOutcome String
+  createdAt               DateTime      @default(now())
+}
+
+model RiskHistory {
+  id          String        @id @default(uuid())
+  sessionId   String
+  session     ThreatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  riskScore   Int
+  category    String        // LOW, GUARDED, MEDIUM, HIGH, CRITICAL
+  stage       String
+  triggerDesc String
+  timestamp   DateTime      @default(now())
+}
+
+// -------------------------------------------------------------
+// ADAPTIVE DECEPTION & SHADOW NETWORK
+// -------------------------------------------------------------
+model Decoy {
+  id                     String             @id @default(uuid())
+  name                   String             // AUTH-DECOY-07, DB-DECOY-03
+  hostname               String             @unique
+  type                   String             // SSH_HONEYPOT, AUTH_CONTROLLER_DECOY, FAKE_DB, FAKE_FILE_SHARE, FAKE_WEB
+  internalAddress        String             // 10.10.99.x
+  siteId                 String
+  site                   Site               @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  status                 String             @default("ARMED") // ARMED, ENGAGED, DIVERTING, DORMANT
+  effectivenessScore     Int                @default(85) // 0-100%
+  engagementRate         Int                @default(78) // 0-100%
+  diversionSuccess       Int                @default(92) // 0-100%
+  evidenceQuality        Int                @default(88) // 0-100%
+  avgEngagementTimeSecs  Int                @default(240)
+  predictionValue        Int                @default(90) // 0-100%
+  templateType           String             // fake-auth, fake-db, fake-ssh, fake-files
+  honeytokens            Honeytoken[]
+  autonomousActions      AutonomousAction[]
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+}
+
+model Honeytoken {
+  id                String             @id @default(uuid())
+  name              String             // vpn_credentials.txt, finance_q4.xlsx, etc.
+  type              String             // CREDENTIAL_FILE, DATABASE_DUMP, AWS_KEY, NETWORK_MAP
+  tokenValue        String             // Synthetic token signature
+  assetId           String?
+  asset             Asset?             @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  decoyId           String?
+  decoy             Decoy?             @relation(fields: [decoyId], references: [id], onDelete: SetNull)
+  locationPath      String             // /home/share/finance_q4.xlsx
+  triggered         Boolean            @default(false)
+  triggeredCount    Int                @default(0)
+  lastTriggeredAt   DateTime?
+  autonomousActions AutonomousAction[]
+  createdAt         DateTime           @default(now())
+}
+
+// -------------------------------------------------------------
+// AUTONOMY SAFETY GOVERNOR
+// -------------------------------------------------------------
+model AutonomousAction {
+  id                 String        @id @default(uuid())
+  sessionId          String
+  session            ThreatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  actionType         String        // ACTIVATE_DECOY, DEPLOY_HONEYTOKEN, REDIRECT_SHADOW, ISOLATE_SIMULATED_SESSION
+  targetDecoyId      String?
+  targetDecoy        Decoy?        @relation(fields: [targetDecoyId], references: [id], onDelete: SetNull)
+  targetHoneytokenId String?
+  targetHoneytoken   Honeytoken?   @relation(fields: [targetHoneytokenId], references: [id], onDelete: SetNull)
+  rationale          String
+  status             String        @default("EXECUTED") // EXECUTED, BLOCKED, PENDING_APPROVAL
+  executedAt         DateTime      @default(now())
+}
+
+model GovernorDecision {
+  id            String         @id @default(uuid())
+  sessionId     String?
+  session       ThreatSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  actionType    String         // ACTIVATE_DECOY, REDIRECT_SESSION, PROD_ENDPOINT_ISOLATION, etc.
+  autonomyLevel String         // LEVEL_0, LEVEL_1, LEVEL_2, LEVEL_3
+  decision      String         // ALLOW, HUMAN_APPROVAL, BLOCK
+  policyRule    String         // "Safe Deception Automation: Deceptive decoy activation auto-approved"
+  reason        String
+  approvedBy    String         @default("AUTONOMOUS_POLICY_ENGINE")
+  createdAt     DateTime       @default(now())
+}
+
+// -------------------------------------------------------------
+// INCIDENTS, EVIDENCE & PHYSICAL RESPONSE
+// -------------------------------------------------------------
+model Incident {
+  id              String               @id @default(uuid())
+  incidentCode    String               @unique // INC-2026-8812
+  title           String
+  severity        String               // LOW, MEDIUM, HIGH, CRITICAL
+  risk            Int                  // 0-100
+  attackType      String
+  predictedAttack String
+  siteId          String
+  site            Site                 @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  sessionId       String?
+  session         ThreatSession?       @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  targetAssetId   String?
+  targetAsset     Asset?               @relation(fields: [targetAssetId], references: [id], onDelete: SetNull)
+  responseTeamId  String?
+  responseTeam    ResponseTeam?        @relation(fields: [responseTeamId], references: [id], onDelete: SetNull)
+  status          String               @default("OPEN") // OPEN, INVESTIGATING, RESPONSE_DISPATCHED, CONTAINED, RESOLVED, CLOSED
+  evidenceCount   Int                  @default(0)
+  evidence        Evidence[]
+  assignments     ResponseAssignment[]
+  reports         Report[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+}
+
+model Evidence {
+  id                 String         @id @default(uuid())
+  incidentId         String?
+  incident           Incident?      @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  sessionId          String?
+  session            ThreatSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  evidenceType       String         // EVENT_LOG, DECOY_INTERACTION, HONEYTOKEN_TRIGGER, AUTH_EVENT, PREDICTION_SNAPSHOT
+  title              String
+  description        String
+  rawPayload         String
+  sha256Hash         String         // Evidence Integrity Hash
+  evidenceStrength   Int            @default(90) // 0-100%
+  predictionConf     Int            @default(84) // 0-100%
+  evidenceCompleteness Int          @default(95) // 0-100%
+  createdAt          DateTime       @default(now())
+}
+
+model ResponseTeam {
+  id               String               @id @default(uuid())
+  code             String               @unique // RES-CHN-01, RES-MUM-01
+  name             String               // Rapid Incident Response Unit Alpha
+  locationName     String               // Chennai Metro Central
+  latitude         Float
+  longitude        Float
+  status           String               @default("AVAILABLE") // AVAILABLE, MONITORING, DISPATCHED, ON_ROUTE, ON_SITE, UNAVAILABLE
+  assignedIncident String?
+  etaMinutes       Int                  @default(0)
+  contactLead      String               // Capt. R. Sundaram
+  phone            String               // +91 44 2800 4401
+  lastUpdate       DateTime             @default(now())
+  incidents        Incident[]
+  assignments      ResponseAssignment[]
+}
+
+model ResponseAssignment {
+  id                  String       @id @default(uuid())
+  incidentId          String
+  incident            Incident     @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  teamId              String
+  team                ResponseTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  priority            String       // P1_CRITICAL, P2_HIGH, P3_NORMAL
+  etaMinutes          Int
+  recommendedResponse String       // Physical site perimeter isolation, forensic memory dump of auth decoy
+  status              String       @default("DISPATCHED") // DISPATCHED, ON_ROUTE, ON_SITE, COMPLETED
+  createdAt           DateTime     @default(now())
+}
+
+// -------------------------------------------------------------
+// PREDICTION EVALUATION & ATTACK LEAD TIME
+// -------------------------------------------------------------
+model PredictionEvaluation {
+  id              String           @id @default(uuid())
+  sessionId       String
+  session         ThreatSession    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  predictionId    String?
+  prediction      AttackPrediction? @relation(fields: [predictionId], references: [id], onDelete: SetNull)
+  predictedAction String           // Credential Access Attempt
+  actualAction    String           // Credential Access Attempt
+  confidence      Int              // 84%
+  predictedAt     DateTime
+  occurredAt      DateTime
+  leadTimeSeconds Int              // 327 seconds (5m 27s)
+  isCorrect       Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+}
+
+// -------------------------------------------------------------
+// REPORTS & AUDIT LOGS
+// -------------------------------------------------------------
+model Report {
+  id             String    @id @default(uuid())
+  reportCode     String    @unique // REP-2026-9041
+  incidentId     String
+  incident       Incident  @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  title          String
+  executiveSummary String
+  reportDataJson String    // Full serialized snapshot with evidence, hashes, what-if, governor logs
+  sha256Hash     String    // Hash of the report contents
+  generatedBy    String    @default("SmartHive AI Autopilot")
+  createdAt      DateTime  @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actor     String   // System, SOC_Analyst, Governor
+  action    String   // DECOY_ACTIVATED, INCIDENT_CONTAINED, SIMULATION_TRIGGERED
+  target    String   // SH-104, AUTH-DECOY-07
+  details   String
+  ipAddress String   @default("127.0.0.1")
+  timestamp DateTime @default(now())
+}
+
+model SystemSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique // AUTONOMY_LEVEL, AI_ENGINE_URL, RISK_THRESHOLD
+  value       String   // LEVEL_2, http://localhost:8000, 75
+  description String
+  updatedAt   DateTime @updatedAt
+}
