@@ -86,8 +86,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         let demoName = 'Ananya Iyer';
         let demoRole = 'SOC_ANALYST';
 
-        if (lowerEmail.includes('admin') || lowerEmail.includes('malhotra')) {
-          demoName = 'Vikram Malhotra';
+        if (lowerEmail.includes('admin') || lowerEmail.includes('praveen') || lowerEmail.includes('balamurugan')) {
+          demoName = 'Praveen Balamurugan';
           demoRole = 'ADMIN';
         } else if (lowerEmail.includes('responder') || lowerEmail.includes('sundaram')) {
           demoName = 'Capt. R. Sundaram';

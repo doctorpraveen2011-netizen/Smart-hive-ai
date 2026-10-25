@@ -53,7 +53,7 @@ async function main() {
       {
         email: 'admin@smartcorp.demo',
         password: adminPw,
-        name: 'Vikram Malhotra',
+        name: 'Praveen Balamurugan',
         role: 'ADMIN',
       },
       {

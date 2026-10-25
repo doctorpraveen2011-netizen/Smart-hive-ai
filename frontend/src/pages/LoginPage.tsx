@@ -43,7 +43,7 @@ export const LoginPage: React.FC = () => {
       description: 'Primary SOC control plane, deception activation & alert triage',
     },
     {
-      name: 'Vikram Malhotra',
+      name: 'Praveen Balamurugan',
       role: 'Enterprise Admin',
       email: 'admin@smartcorp.demo',
       password: 'Admin2026!',

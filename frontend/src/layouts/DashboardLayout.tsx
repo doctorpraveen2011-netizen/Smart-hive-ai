@@ -395,9 +395,9 @@ export const DashboardLayout: React.FC = () => {
                   {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
                 </div>
                 <div className="hidden sm:block text-left text-xs leading-tight">
-                  <div className="font-semibold text-slate-200">{user?.name || 'Admin Analyst'}</div>
+                  <div className="font-semibold text-slate-200">{user?.name || 'Praveen Balamurugan'}</div>
                   <div className="text-[10px] text-cyan-400 font-mono">
-                    {user?.role ? user.role.replace('_', ' ') : 'Security Analyst'}
+                    {user?.role ? user.role.replace('_', ' ') : 'Enterprise Admin'}
                   </div>
                 </div>
                 <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
@@ -407,10 +407,10 @@ export const DashboardLayout: React.FC = () => {
               {isUserMenuOpen && (
                 <div className="absolute right-0 top-10 w-56 bg-[#09101F] border border-cyan-500/40 rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-50 p-2 font-mono text-xs">
                   <div className="p-2 border-b border-cyan-500/15 mb-1.5">
-                    <div className="font-bold text-white text-xs truncate">{user?.name || 'Admin Analyst'}</div>
-                    <div className="text-[10px] text-slate-400 truncate">{user?.email || 'analyst@smartcorp.demo'}</div>
+                    <div className="font-bold text-white text-xs truncate">{user?.name || 'Praveen Balamurugan'}</div>
+                    <div className="text-[10px] text-slate-400 truncate">{user?.email || 'admin@smartcorp.demo'}</div>
                     <div className="mt-1.5 inline-block text-[9px] font-bold px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
-                      CLEARANCE: {user?.role || 'SOC_ANALYST'}
+                      CLEARANCE: {user?.role || 'ADMIN'}
                     </div>
                   </div>
 
