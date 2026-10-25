@@ -392,7 +392,7 @@ export const DashboardLayout: React.FC = () => {
                 className="flex items-center space-x-2.5 pl-2 border-l border-cyan-500/20 hover:opacity-90 transition-opacity focus:outline-none"
               >
                 <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white text-xs font-bold border border-cyan-400/60 shadow-sm font-mono">
-                  {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
+                  {user?.name ? user.name.charAt(0).toUpperCase() : 'P'}
                 </div>
                 <div className="hidden sm:block text-left text-xs leading-tight">
                   <div className="font-semibold text-slate-200">{user?.name || 'Praveen Balamurugan'}</div>

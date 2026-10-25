@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { api } from '../services/api';
 import { useSocket } from '../hooks/useSocket';
+import { useAuth } from '../context/AuthContext';
 import {
   FileText,
   ShieldCheck,
@@ -29,6 +30,7 @@ interface AuditRecord {
 }
 
 export const AuditLogPage: React.FC = () => {
+  const { user } = useAuth();
   const [logs, setLogs] = useState<AuditRecord[]>([
     {
       id: 'log-seed-1',
@@ -91,6 +93,15 @@ export const AuditLogPage: React.FC = () => {
       target: 'AUTH-SRV-01',
       details: 'Proposed production host isolation flagged for manual confirmation.',
       ipAddress: '127.0.0.1',
+      timestamp: new Date(Date.now() - 300000).toISOString(),
+    },
+    {
+      id: 'log-seed-8',
+      actor: 'Praveen Balamurugan (ADMIN)',
+      action: 'SECURITY_POLICY_OVERRIDE',
+      target: 'DECEPTION_FABRIC_GATEWAY',
+      details: 'Enterprise Admin Praveen Balamurugan approved autonomous deception engagement protocol.',
+      ipAddress: '10.0.0.1',
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -99,7 +110,7 @@ export const AuditLogPage: React.FC = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const [verifiedStatus, setVerifiedStatus] = useState<string | null>(null);
   const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
-  const [newLogActor, setNewLogActor] = useState('SOC_Lead_Analyst');
+  const [newLogActor, setNewLogActor] = useState(() => (user?.name ? `${user.name} (${user.role || 'ADMIN'})` : 'Praveen Balamurugan (ADMIN)'));
   const [newLogAction, setNewLogAction] = useState('MANUAL_FORENSIC_INSPECTION');
   const [newLogTarget, setNewLogTarget] = useState('AUTH-SRV-01');
   const [newLogDetails, setNewLogDetails] = useState('');

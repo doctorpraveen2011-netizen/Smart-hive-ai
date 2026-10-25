@@ -25,7 +25,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const savedUser = localStorage.getItem('smarthive_user');
     if (savedUser) {
       try {
-        return JSON.parse(savedUser);
+        const parsed = JSON.parse(savedUser);
+        if (
+          parsed &&
+          (parsed.role === 'ADMIN' ||
+            parsed.email === 'admin@smartcorp.demo' ||
+            parsed.name === 'Vikram Malhotra' ||
+            parsed.name === 'Admin Analyst' ||
+            !parsed.name)
+        ) {
+          parsed.name = 'Praveen Balamurugan';
+          localStorage.setItem('smarthive_user', JSON.stringify(parsed));
+        }
+        return parsed;
       } catch {
         return null;
       }
@@ -52,7 +64,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             console.warn('Session expired (401), logging out');
             logout();
           } else {
-            // Network error on static hosting (e.g. GitHub Pages) - retain offline demo session
+            // Network error on static hosting (e.g. GitHub Pages) - retain offline demo session & migrate admin identity
+            setUser((prev) => {
+              if (
+                prev &&
+                (prev.role === 'ADMIN' ||
+                  prev.email === 'admin@smartcorp.demo' ||
+                  prev.name === 'Vikram Malhotra' ||
+                  prev.name === 'Admin Analyst' ||
+                  !prev.name)
+              ) {
+                const updated = { ...prev, name: 'Praveen Balamurugan' };
+                localStorage.setItem('smarthive_user', JSON.stringify(updated));
+                return updated;
+              }
+              return prev;
+            });
             console.info('Backend unreachable, preserving local security session');
           }
         }
